@@ -27,5 +27,7 @@ while Q:
         if 0<=Nx<N and 0<=Nx<M:
             if isbroke == 0:  # 만약에 벽을 뚫은 적이 없는 상태라면
                 pass
-                if visited[Nx][Ny][0]
+                if visited[Nx][Ny][0]:
+                    pass
             else: # 벽을 뚫은 경우
+                pass
