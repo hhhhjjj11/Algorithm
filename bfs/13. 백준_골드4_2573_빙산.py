@@ -64,6 +64,15 @@ def solve():
         res+=1
         if check() > 1:
             break
+        C = 0
+        for i in range(N):
+            for j in range(M):
+                if graph[i][j] >0:
+                    C +=1
+
+        if not C : 
+            print(0)
+            return
     
     print(res)
     return
