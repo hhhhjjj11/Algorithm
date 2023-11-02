@@ -22,6 +22,9 @@ S = [0]*N               # S[i] = i번째까지 합
 
 v=0
 
+if li[0] ==2:
+    li[0] = -1
+
 S[0] =li[0]
 
 for i in range(1,N):
@@ -30,25 +33,31 @@ for i in range(1,N):
 
     S[i] = S[i-1] + li[i]    # S[i] = i 번째 까지의 계산 
 
-L,R = 0,0
-M = 0
-while True:
-    if L == R:
-        temp = S[R]       # L에서 R까지 
-    else:
-        temp = S[R] - S[L-1]  # R에서 ㄴ까지의 합
-    
-    if temp >= M:
-        M = temp
-        if R == N-1:
-            R += 1
-        else:
-            L += 1
-        
-    else:
-        L += 1
-    
-    if L==N:
-        break
-        
-print(M)
+print(S)
+
+# |왼쪽개수-오른쪽개수| 가 가장 클 때 :
+# S 가 가장 크거나 가장 작거나. 
+# 현재까지 중에서 A가 가장 많았던 순간의 A의 갯수를 뺐을 때
+# 현재까지 중에서 B가 가장 많았던 순간을 뺐을 때
+# A가 가장 많았던 때 A의 갯수 = S의 최대
+# B가 가장 많았던 때 B의 갯수 = S의 최소
+ 
+
+result = S[0]
+
+if S[0]>0:
+    m = 0
+    M = 1
+else:
+    m = -1
+    M = 0
+
+for i in range(N):
+    if m > S[i]:
+        m = S[i]
+    if M < S[i]:
+        M = S[i]
+    result = max(abs(S[i]-M) , abs(S[i] -m), result)
+    # print('==========')
+    # print('i, m, M , res', i, m ,M, result)
+print(result)
