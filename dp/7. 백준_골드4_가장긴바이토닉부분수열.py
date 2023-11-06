@@ -11,6 +11,7 @@ li = list(map(int,input().split()))
 dp = [[1,1] for _ in range(N)]          # 첫 항: 증가 상태 cnt / 2항 : 감소상태 cnt
 dp[0][0]= 1
 dp[0][1] = 1
+
 for i in range(N):
     for j in range(i):
         if li[i] > li[j] and dp[i][0] < dp[j][0]+1:
