@@ -15,5 +15,5 @@ for i in range(1,501):
         if li[i] > li[j] and dp[j] + 1 > dp[i]:
             dp[i] = dp[j] + 1
 
-print(dp)
+
 print(N-max(dp))
