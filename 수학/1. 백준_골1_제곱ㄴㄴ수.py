@@ -21,11 +21,9 @@ for i in range(2, int(M**(0.5)) + 1):
     # 이제 범위를 추려주기 위해 m 과 M 사이의 square의 배수들만을 찾는다.
     if m/square == m//square:
         for X in range((m//square)*square, M+1,square):
-            print('dd',X)
             li[X-m] = 1
     else: 
         for X in range(((m//square)+1)*square, M+1,square):
-            print('dd',X)
             li[X-m] = 1
     # ((m//square)+1)*square : m 보다 작지 않으면서 가장 작은 square 의 배수.
     # 수정 -> ((m//square)+1)*square : m 보다 크면서 가장 작은 square 의 배수.
