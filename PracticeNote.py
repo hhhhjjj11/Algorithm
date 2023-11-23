@@ -1,3 +1,3 @@
-g ={1:'d', 2:['sdfsd',2]}
+from random import randint
 
-print(len(g))
+print(randint(1,2))
