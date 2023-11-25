@@ -1,9 +1,9 @@
+# 정리
 """
-바텀업으로 풀면 안되는이유 
-바텀업으로 푸는게 적합한 경우
 
-값으로 바로 하는것보다는 해당 칸에서 코너횟수랑 직선거리횟수로 생각하는게 나음.
 """
+
+# 풀이
 import sys
 sys.setrecursionlimit(10**6)
 
@@ -27,7 +27,7 @@ def solution(board):
                     dfs(i_next,j_next,d, V+100)
                     if i==1 and j==1 :
                         print('1', d_now, d, V, V+100)
-                elif d_now != d and V+600 <= dp[i_next][j_next]+600: # 방향을 꺾는경우  # 값이 같아도 탐색 해야함
+                elif d_now != d and V+600 <= dp[i_next][j_next]: # 방향을 꺾는경우  # 값이 같아도 탐색 해야함
                     dfs(i_next,j_next,d, V+600)
                     if i==1 and j==1 :
                         print('2', d_now, d, V, V+600)
@@ -37,5 +37,3 @@ def solution(board):
     # for row in dp:
     #     print(row)
     return dp[N-1][N-1]
-
-print(solution([[0,0,1,0],[0,0,0,0],[0,1,0,1],[1,0,0,0]]))
