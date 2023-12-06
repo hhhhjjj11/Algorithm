@@ -8,6 +8,7 @@
 5. 큐에넣는 순서 = 큐에서 뺀 순서 = 위상정렬
 
 """
+
 # 풀이
 import sys
 from collections import deque
