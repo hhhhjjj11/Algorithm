@@ -30,44 +30,77 @@ DP를 쓸 수 있는 경우
 
 오케이 삽질 잘했고. 
 DPㄱㄱ
+
+핵심 : 아래 좌 우 -> DP로 쉽게.
 """
-# 풀이2
 import sys
-sys.setrecursionlimit(int(1e6))
-N, M = map(int,sys.stdin.readline().strip().split())
+N, M = map(int, sys.stdin.readline().strip().split())
+
 g = [list(map(int,sys.stdin.readline().strip().split())) for _ in range(N)]
-DP = [[[-int(1e9), -int(1e9), -int(1e9)] for _1 in range(M)] for _ in range(N)]
-visited = [[0]*M for _ in range(N)]
-# DP[i][j] = i,j에서 N-1,M-1까지 가치최대
 
-# 왼, 오, 아래
-di = [0,0,1]
-dj = [-1,1,0]
+dp = [[-int(1e9)]*M for _ in range(N)]
+dp[0][0] = g[0][0]
 
-def DFS(i,j, dir): 
-    # print(i,j,'/',dir)
-    if i==N-1 and j==M-1:
-        return g[N-1][M-1]
+for i in range(N):
+    if i == 0:
+        for j in range(1,M):
+            dp[i][j] = dp[i][j-1] + g[i][j]
+        continue
     
-    if DP[i][j][dir] > -int(1e9):
-        return DP[i][j][dir]
+    LtoR = [0]*M
+    LtoR[0] = dp[i-1][0] + g[i][0]
+    RtoL = [0]*M
+    RtoL[M-1] = dp[i-1][M-1] + g[i][M-1]
 
-    MAX = -int(1e9)
-    
-    for k in range(3):
-        i_next, j_next = i + di[k],j + dj[k]
-        if 0<=i_next<N and 0<=j_next<M and not visited[i_next][j_next]:
-            visited[i_next][j_next] = 1
-            res = DFS(i_next,j_next,k)
-            if MAX < res + g[i][j]:
-                MAX = res + g[i][j]
-            visited[i_next][j_next] = 0
-    # print(i,j,'/',dir,'종료')
-    
-    DP[i][j][dir] = MAX
-    return MAX
+    for j in range(1,M):
+        LtoR[j] = max(dp[i-1][j], LtoR[j-1]) + g[i][j]
+    for j in range(M-2,-1,-1):
+        RtoL[j] = max(dp[i-1][j], RtoL[j+1]) + g[i][j]
 
-visited[0][0] =1
-DFS(0,0,1)
-DFS(0,0,2)
-print(max(DP[0][0]))
+    for j in range(M):
+        dp[i][j] = max(LtoR[j], RtoL[j])
+    
+print(dp[N-1][M-1])
+
+
+# # 풀이2 
+# # 답은 맞음, 시간초과
+# import sys
+# sys.setrecursionlimit(int(1e6))
+# N, M = map(int,sys.stdin.readline().strip().split())
+# g = [list(map(int,sys.stdin.readline().strip().split())) for _ in range(N)]
+# DP = [[[-int(1e9), -int(1e9), -int(1e9)] for _1 in range(M)] for _ in range(N)]
+# visited = [[0]*M for _ in range(N)]
+# # DP[i][j] = i,j에서 N-1,M-1까지 가치최대
+
+# # 왼, 오, 아래
+# di = [0,0,1]
+# dj = [-1,1,0]
+
+# def DFS(i,j, dir): 
+#     # print(i,j,'/',dir)
+#     if i==N-1 and j==M-1:
+#         return g[N-1][M-1]
+    
+#     if DP[i][j][dir] > -int(1e9):
+#         return DP[i][j][dir]
+
+#     MAX = -int(1e9)
+    
+#     for k in range(3):
+#         i_next, j_next = i + di[k],j + dj[k]
+#         if 0<=i_next<N and 0<=j_next<M and not visited[i_next][j_next]:
+#             visited[i_next][j_next] = 1
+#             res = DFS(i_next,j_next,k)
+#             if MAX < res + g[i][j]:
+#                 MAX = res + g[i][j]
+#             visited[i_next][j_next] = 0
+#     # print(i,j,'/',dir,'종료')
+    
+#     DP[i][j][dir] = MAX
+#     return MAX
+
+# visited[0][0] =1
+# DFS(0,0,1)
+# DFS(0,0,2)
+# print(max(DP[0][0]))
