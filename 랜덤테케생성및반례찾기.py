@@ -4,198 +4,119 @@ import random
 
 # 예제 생성
 def example():
+    n, m = randint(1,3), randint(1,3)
+    li = []
+    for _ in range(n):
+        temp = []
+        for x in range(m):
+            temp.append(randint(-100,100))
+        li.append(temp)
 
-    n = randint(0,10)
-    while not n%2:
-        n = randint(0,10)
-    print(n)
-    list = []
-    SET = set()
-    SET.add(1)
-    isFull = False
-    if n%2: # 짝수면은 한개남음 홀수면 딱떨어짐
-        for i in range(1,n+1):
-            A = randint(i+1,n)
-            B = randint(i+1,n)
-            while A in SET:
-                A = randint(i+1,n)
-                print('A',A)
-            while B in SET or B==A:
-                B = randint(i+1,n)
-                print('B',B)
-
-            list.append([i,A,B])
-            SET.add(A)
-            SET.add(B)
-            
-            if len(SET) == n:
-                isFull = True
-                break
-            NUMBER = i+1
-    
-    for x in range(i+1,n+1):
-        pass
-        list.append([x,-1,-1])
-    return n, list
+    return n, m ,li
 
 # 맞은 답
 import sys
 sys.setrecursionlimit(10**5)
 from collections import deque
 
-def right_sol(n, list):
+def right_sol(n, m, mat):
 
-    n = int(sys.stdin.readline())
-    tree = [[-1, -1, -1] for x in range(n+1)]
-    for i in range(n):
-        node, lc, rc = list[i]
-        tree[node][1] = lc
-        tree[node][2] = rc
-        tree[lc][0] = n
-        tree[rc][0] = n
-    root = -1
+    # n, m = map(int, input().split())
+    # mat = [list(map(int, input().split())) for _ in range(n)]
+
+    dp = [[-1000000000] * m for _ in range(n)]
+    left = [[-1000000000] * m for _ in range(n)]
+    right= [[-1000000000] * m for _ in range(n)]
+
+
+    #1 첫줄작업
+    dp[0][0] = mat[0][0]
+    c = 0
+    for j in range(1, m):
+        dp[0][j] = dp[0][j-1] + mat[0][j]
+        c += 1
+
+    for i in range(1, n):
+        # 2 왼->오
+        #2.1 left first
+
+        left[i][0] = dp[i-1][0] + mat[i][0]
+        for j in range(1, m):
+            c += 1
+            left[i][j] = max(dp[i-1][j]+mat[i][j], left[i][j-1]+mat[i][j])
+        # 3 오 ->왼
+        right[i][m-1] = dp[i-1][m-1] + mat[i][m-1]
+        for j in range(m-2, -1, -1):
+            right[i][j] = max(dp[i-1][j] + mat[i][j], right[i][j+1] + mat[i][j])
+            c += 1
+        #4 merge
+        for j in range(m):
+            dp[i][j] = max(right[i][j], left[i][j])
+            c += 1
+    # print(dp[n-1][m-1])
+    return dp[n-1][m-1]
     
-    for i in range(1, n+1):
-        if tree[i][0] == -1:
-            root = i
-
-    visit = [[-1, -1] for x in range(n+1)] # r: level, c: dist
-    def bfs(root):
-        maxdepth = 0
-        queue = deque([root])
-        visit[root][0] = 0
-        while queue:
-            node = queue.popleft()
-            lc = tree[node][1]
-            rc = tree[node][2]
-            if lc != -1:
-                if visit[lc][0] == -1:
-                    visit[lc][0] = visit[node][0] + 1
-                    maxdepth = max(visit[lc][0], maxdepth)
-                    queue.append(lc)
-            if rc!= -1:
-                if visit[rc][0] == -1:
-                    visit[rc][0] = visit[node][0] + 1
-                    maxdepth = max(visit[rc][0], maxdepth)
-                    queue.append(rc)
-        return maxdepth
-
-    global dist
-    dist = 0
-    def inorder_search(node):
-        global dist
-        if tree[node][1] != -1:
-            inorder_search(tree[node][1])
-        dist += 1
-        visit[node][1] = dist
-
-        if tree[node][2] != -1:
-            inorder_search(tree[node][2])
-
-    maxdepth = bfs(root)
-    inorder_search(root)
-    maxdist = 0
-    minlevel = 1e10
-
-    if n == 1:
-        print(1)
-        print(1)
-        return 1,1
-    else:
-        for d in range(maxdepth+1):
-            minval = 1e10
-            maxval = 0
-            for i in range(1, n + 1):
-                if d == visit[i][0]:
-                    minval = min(visit[i][1], minval)
-                    maxval = max(visit[i][1], maxval)
-            if maxdist < maxval-minval+1:
-                minlevel = d+1
-                maxdist = maxval-minval+1
-
-        print(minlevel)
-        print(maxdist)
-        return minlevel, maxdist
-
 
 # 틀린 답
 import sys
 
-def wrong_sol(N, list):
+def wrong_sol(N, M, g):
+    import sys
+    sys.setrecursionlimit(int(1e6))
+    # N, M = map(int,sys.stdin.readline().strip().split())
+    # g = [list(map(int,sys.stdin.readline().strip().split())) for _ in range(N)]
+    DP = [[[-int(1e9), -int(1e9), -int(1e9)] for _1 in range(M)] for _ in range(N)]
+    visited = [[0]*M for _ in range(N)]
+    # DP[i][j] = i,j에서 N-1,M-1까지 가치최대
 
-    tree = [[0,0] for _ in range(N+1)]
+    # 왼, 오, 아래
+    di = [0,0,1]
+    dj = [-1,1,0]
 
-    for XX in range(N):
-        node, leftChild, rightChild = list[XX]
-        tree[node] = [leftChild, rightChild]
-
-    g = {}
-
-    def dfs(X, depthCnt, upCnt):    # 현재노드, 깊이, 오른쪽자식에게 전해줘야할 누적 갯수 값.
-        # print('시작', X, '/', 'dep', depthCnt, 'V', upCnt)
-        leftCount=0
-        rightCount=0
-
-        left, right = tree[X]
-
-        # left 부터 탐색 해야 한다.
-        if left != -1:
-            leftCount = dfs(left, depthCnt+1, upCnt)
+    def DFS(i,j, dir): 
+        # print(i,j,'/',dir)
+        if i==N-1 and j==M-1:
+            return g[N-1][M-1]
         
-        if right != -1:
-            rightCount = dfs(right, depthCnt+1, leftCount+upCnt+1)
+        if DP[i][j][dir] > -int(1e9):
+            return DP[i][j][dir]
+
+        MAX = -int(1e9)
         
-        if depthCnt in g:
-            g[depthCnt].append(upCnt+leftCount+1)
-        else:
-            g[depthCnt] = [upCnt+leftCount+1]
-        # print('종료', X, '/', 'left', leftCount,  'right', rightCount)
-        return leftCount + rightCount + 1
+        for k in range(3):
+            i_next, j_next = i + di[k],j + dj[k]
+            if 0<=i_next<N and 0<=j_next<M and not visited[i_next][j_next]:
+                visited[i_next][j_next] = 1
+                res = DFS(i_next,j_next,k)
+                if MAX < res + g[i][j]:
+                    MAX = res + g[i][j]
+                visited[i_next][j_next] = 0
+        # print(i,j,'/',dir,'종료')
+        
+        DP[i][j][dir] = MAX
+        return MAX
 
-    # 루트 노드 찾기.
-    for X1 in range(1, N+1):
-        isRoot = True
-        for node in range(1, N+1):
-            if X1 in tree[node]:
-                isRoot = False
-                break
-        if isRoot:
-            root = X1
-            break
-                
-    dfs(root,1,0)
-
-    ans1 = 10**10
-    ans2 = 0
-
-    # for row in g:
-    #     print(row)
-
-    # print(g)
-
-    for deep in g:
-        if ans2 <= max(g[deep]) - min(g[deep]) + 1:
-            ans2 = max(g[deep]) - min(g[deep]) + 1
-            if ans1 > deep:
-                ans1 = deep
-
-    print(ans1, ans2)
-    return ans1, ans2
-
+    visited[0][0] =1
+    DFS(0,0,1)
+    DFS(0,0,2)
+    # print(max(DP[0][0]))
+    if N==1 and M==1 :
+        return g[0][0]
+    return max(DP[0][0])
 # 반례 출력
 def check():
-    n, list = example()
-    right = right_sol(n, list)
-    wrong = wrong_sol(n, list)
+    n, m, li = example()
+    right = right_sol(n,m, li)
+    wrong = wrong_sol(n,m, li)
 
     if right != wrong:
-        print(n, list)
+        print(n, m, li)
 
         print("맞은 답:", right)
         print("틀린 답:", wrong)
         return
     else:
-        print(n, list)
+        print(n, m,li)
         check()
 
 check()
